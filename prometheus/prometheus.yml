@@ -9,5 +9,6 @@ scrape_configs:
     static_configs: 
       - targets: [prometheus:9090] 
   - job_name: 'mqttgateway'
+    honor_labels: true
     static_configs:
       - targets: [mqttgateway:9337]

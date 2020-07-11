@@ -1,0 +1,10 @@
+  
+apiVersion: 1
+providers:
+- name: dht22 
+  folder: ''
+  type: file
+  disableDeletion: false
+  editable: false 
+  options:
+    path: /etc/grafana/provisioning/dashboards
