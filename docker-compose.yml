@@ -11,5 +11,3 @@ services:
     volumes: 
       - mosquitto_data:/mosquitto/
       - ./mosquitto/config/:/mosquitto/config:ro
-      - ./mosquitto/data/:/mosquitto/data:rw
-      - ./mosquitto/log/:/mosquitto/log:rw
