@@ -1,13 +1,47 @@
 version: "3.8"
 volumes: 
   mosquitto_data: {}
+  prometheus_data: {}
+  grafana_data: {}
+
 services:
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - prometheus_data:/var/lib/prometheus
+      - ./prometheus/:/etc/prometheus/
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    ports:
+      - "9090:9090"
   mosquitto:
     image: eclipse-mosquitto
     container_name: mosquitto
+    restart: always
     ports:
       - "1883:1883" 
       - "9001:9001"
     volumes: 
       - mosquitto_data:/mosquitto/
       - ./mosquitto/config/:/mosquitto/config:ro
+  mqttgateway:
+    image: mqttgateway/mqttgateway
+    container_name: mqttgateway
+    depends_on: 
+      - mosquitto
+    env_file: 
+      - ./mqttgateway/env-variables.env
+    ports: 
+      - "9337:9337"
+  grafana:
+    image: grafana/grafana
+    depends_on:
+      - prometheus
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    env_file:
+      - ./grafana/config.monitoring
+  
