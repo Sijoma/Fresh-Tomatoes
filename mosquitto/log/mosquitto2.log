@@ -1,0 +1,8 @@
+1594416917: mosquitto version 1.6.10 starting
+1594416917: Config loaded from /mosquitto/config/mosquitto.conf.
+1594416917: Opening ipv4 listen socket on port 1883.
+1594416917: Opening ipv6 listen socket on port 1883.
+1594416917: New connection from 172.18.0.1 on port 1883.
+1594416917: New client connected from 172.18.0.1 as 6f150b76-1e3d-40e1-8b92-d592cce016831594415562693 (p2, c1, k10).
+1594416974: mosquitto version 1.6.10 terminating
+1594416974: Saving in-memory database to /mosquitto/data/mosquitto.db.
