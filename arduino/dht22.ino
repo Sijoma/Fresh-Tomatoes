@@ -4,7 +4,7 @@
 
 const char* ssid = "***";
 const char* password = "***";
-const char* mqtt_server = "***";
+const char* mqtt_server = "raspberrypi";
 
 #define DHTPIN D2     // Digital pin connected to the DHT sensor
 #define DHTTYPE DHT22   // DHT 22  (AM2302), AM2321
@@ -15,20 +15,17 @@ const char* mqtt_server = "***";
 DHT dht(DHTPIN, DHTTYPE);
 
 // MQTT Def
-#define clientId "ESP_TempHumid"
-#define humidity_topic "sensor/humidity"
-#define temperature_topic "sensor/temperature"
-#define timeBetweenMeasurements 3000
-
+#define clientId "DHT22_TempHumid"
+#define humidity_topic "prometheus/job/ESP8266/instance/raisedBed/humidity"
+#define temperature_topic "prometheus/job/ESP8266/instance/raisedBed/temperature_celsius"
+#define heatIndex_topic "prometheus/job/ESP8266/instance/raisedBed/heat_index"
 WiFiClient espClient;
 PubSubClient client(espClient);
-unsigned long lastMsg = 0;
-#define MSG_BUFFER_SIZE  (50)
-char msg[MSG_BUFFER_SIZE];
-int value = 0;
+
+unsigned long time_now = 0;
+int timeBetweenMeasurements = 10000; 
 
 void setup_wifi() {
-
   delay(10);
   // We start by connecting to a WiFi network
   Serial.println();
@@ -89,9 +86,12 @@ void loop() {
     reconnect();
   }
   client.loop();
-  // Wait a few seconds between measurements.
-  delay(timeBetweenMeasurements);
-  readTemperature();
+  if((unsigned long)(millis() - time_now) > timeBetweenMeasurements) {
+    time_now = millis(); 
+ 
+    readTemperature();
+  }
+  
 }
 
 void readTemperature() {
@@ -112,7 +112,8 @@ void readTemperature() {
 
   // Compute heat index in Celsius (isFahreheit = false)
   float hic = dht.computeHeatIndex(t, h, false);
-  
+  client.publish(heatIndex_topic, String(hic).c_str(), true);
+
   Serial.print(F("Humidity: "));
   Serial.print(h);
   Serial.print(F("%  Temperature: "));
