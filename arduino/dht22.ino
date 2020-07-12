@@ -4,7 +4,7 @@
 
 const char* ssid = "***";
 const char* password = "***";
-const char* mqtt_server = "raspberrypi";
+const char* mqtt_server = "***";
 
 #define DHTPIN D2     // Digital pin connected to the DHT sensor
 #define DHTTYPE DHT22   // DHT 22  (AM2302), AM2321
@@ -19,6 +19,7 @@ DHT dht(DHTPIN, DHTTYPE);
 #define humidity_topic "prometheus/job/ESP8266/instance/raisedBed/humidity"
 #define temperature_topic "prometheus/job/ESP8266/instance/raisedBed/temperature_celsius"
 #define heatIndex_topic "prometheus/job/ESP8266/instance/raisedBed/heat_index"
+
 WiFiClient espClient;
 PubSubClient client(espClient);
 
