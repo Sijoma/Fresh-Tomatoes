@@ -122,6 +122,7 @@
       "fieldConfig": {
         "defaults": {
           "custom": {},
+          "decimals": 2,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -155,7 +156,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "last"
+            "mean"
           ],
           "fields": "",
           "values": false
@@ -164,7 +165,7 @@
       "pluginVersion": "7.0.6",
       "targets": [
         {
-          "expr": "sum_over_time(Pump[1y]) / 12",
+          "expr": "sum_over_time(Pump[1w]) / 12",
           "instant": false,
           "interval": "5",
           "intervalFactor": 1,
@@ -183,6 +184,7 @@
       "fieldConfig": {
         "defaults": {
           "custom": {},
+          "decimals": 2,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -216,7 +218,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "last"
+            "mean"
           ],
           "fields": "",
           "values": false
@@ -276,7 +278,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "mean"
+            "lastNotNull"
           ],
           "fields": "",
           "values": false
@@ -285,7 +287,7 @@
       "pluginVersion": "7.0.6",
       "targets": [
         {
-          "expr": "sum_over_time(Pump[60m])",
+          "expr": "sum_over_time(Pump[60m]) / 12",
           "instant": false,
           "interval": "5",
           "intervalFactor": 1,
