@@ -1,5 +1,5 @@
 version: "3.8"
-volumes: 
+volumes:
   mosquitto_data: {}
   prometheus_data: {}
   grafana_data: {}
@@ -11,8 +11,8 @@ services:
       - prometheus_data:/prometheus
       - ./prometheus/:/etc/prometheus/
     command:
-      - '--storage.tsdb.path=/prometheus'
-      - '--config.file=/etc/prometheus/prometheus.yml'
+      - "--storage.tsdb.path=/prometheus"
+      - "--config.file=/etc/prometheus/prometheus.yml"
     ports:
       - "9090:9090"
   mosquitto:
@@ -20,19 +20,26 @@ services:
     container_name: mosquitto
     restart: always
     ports:
-      - "1883:1883" 
+      - "1883:1883"
       - "9001:9001"
-    volumes: 
+    volumes:
       - mosquitto_data:/mosquitto/
       - ./mosquitto/config/:/mosquitto/config:ro
+  go-backend:
+    build:
+      context: ./go-backend
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "5000:5000"
   mqttgateway:
     image: mqttgateway/mqttgateway
     container_name: mqttgateway
-    depends_on: 
+    depends_on:
       - mosquitto
-    env_file: 
+    env_file:
       - ./mqttgateway/env-variables.env
-    ports: 
+    ports:
       - "9337:9337"
   grafana:
     image: grafana/grafana
@@ -45,4 +52,3 @@ services:
       - ./grafana/provisioning/:/etc/grafana/provisioning/
     env_file:
       - ./grafana/config.monitoring
-  
