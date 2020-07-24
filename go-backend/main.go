@@ -17,8 +17,8 @@ func PumpOn(w http.ResponseWriter, req *http.Request) {
 	}
 	key := keys[0]
 	minutes, _ := strconv.Atoi(key)
-	if minutes > 10 {
-		fmt.Fprintf(w, "Don't water longer than 10 minutes")
+	if minutes > 30 {
+		fmt.Fprintf(w, "Don't water longer than 30 minutes")
 		return
 	}
 	pumpState := ""

@@ -118,6 +118,67 @@
     },
     {
       "datasource": "Prometheus",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "m"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 7,
+        "x": 8,
+        "y": 1
+      },
+      "id": 24,
+      "interval": "5s",
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "pluginVersion": "7.0.6",
+      "targets": [
+        {
+          "expr": "sum_over_time(Pump[1y]) / 12",
+          "instant": false,
+          "interval": "5",
+          "intervalFactor": 1,
+          "legendFormat": "Minuten",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Pumpenzeit seit letztem Auffüllen",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -153,17 +214,18 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "m"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 5,
         "w": 7,
-        "x": 8,
+        "x": 15,
         "y": 1
       },
-      "id": 24,
+      "id": 25,
       "interval": "5s",
       "options": {
         "colorMode": "value",
@@ -181,7 +243,7 @@
       "pluginVersion": "7.0.6",
       "targets": [
         {
-          "expr": "sum_over_time(Pump[1d]) / 12",
+          "expr": "sum_over_time(Pump[60m]) / 12",
           "instant": false,
           "interval": "5",
           "intervalFactor": 1,
@@ -191,7 +253,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Pumpenzeit",
+      "title": "Pumpenzeit letzte Stunde",
       "type": "stat"
     },
     {
@@ -845,5 +907,5 @@
   "timezone": "",
   "title": "DHT22",
   "uid": "chYmfmzgz",
-  "version": 2
+  "version": 3
 }
