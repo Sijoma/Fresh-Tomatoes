@@ -68,7 +68,7 @@
                 "value": null
               },
               {
-                "color": "green",
+                "color": "semi-dark-yellow",
                 "value": 0
               },
               {
@@ -83,7 +83,7 @@
       },
       "gridPos": {
         "h": 5,
-        "w": 7,
+        "w": 5,
         "x": 1,
         "y": 1
       },
@@ -98,7 +98,7 @@
           "values": false
         },
         "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "showThresholdMarkers": false
       },
       "pluginVersion": "7.0.6",
       "targets": [
@@ -127,7 +127,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "dark-blue",
                 "value": null
               },
               {
@@ -142,14 +142,14 @@
       },
       "gridPos": {
         "h": 5,
-        "w": 7,
-        "x": 8,
+        "w": 5,
+        "x": 6,
         "y": 1
       },
       "id": 24,
       "interval": "5s",
       "options": {
-        "colorMode": "value",
+        "colorMode": "background",
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
@@ -179,34 +179,16 @@
     },
     {
       "datasource": "Prometheus",
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "custom": {},
-          "mappings": [
-            {
-              "from": "",
-              "id": 0,
-              "operator": "",
-              "text": "Pumpe an",
-              "to": "",
-              "type": 1,
-              "value": "1"
-            },
-            {
-              "from": "",
-              "id": 1,
-              "operator": "",
-              "text": "Pumpe aus",
-              "to": "",
-              "type": 1,
-              "value": "0"
-            }
-          ],
+          "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "dark-blue",
                 "value": null
               },
               {
@@ -221,14 +203,14 @@
       },
       "gridPos": {
         "h": 5,
-        "w": 7,
-        "x": 15,
+        "w": 5,
+        "x": 11,
         "y": 1
       },
-      "id": 25,
+      "id": 26,
       "interval": "5s",
       "options": {
-        "colorMode": "value",
+        "colorMode": "background",
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
@@ -243,7 +225,67 @@
       "pluginVersion": "7.0.6",
       "targets": [
         {
-          "expr": "sum_over_time(Pump[60m]) / 12",
+          "expr": "sum_over_time(Pump[2d]) / 12",
+          "instant": false,
+          "interval": "5",
+          "intervalFactor": 1,
+          "legendFormat": "Minuten",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Pumpenzeit 2 Tage",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-blue",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 16,
+        "y": 1
+      },
+      "id": 25,
+      "interval": "5s",
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "pluginVersion": "7.0.6",
+      "targets": [
+        {
+          "expr": "sum_over_time(Pump[60m])",
           "instant": false,
           "interval": "5",
           "intervalFactor": 1,
@@ -254,6 +296,7 @@
       "timeFrom": null,
       "timeShift": null,
       "title": "Pumpenzeit letzte Stunde",
+      "transformations": [],
       "type": "stat"
     },
     {
@@ -888,7 +931,7 @@
     "list": []
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {
