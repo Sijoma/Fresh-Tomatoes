@@ -15,6 +15,8 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yml"
     ports:
       - "9090:9090"
+    networks:
+      - app-network
   mosquitto:
     image: eclipse-mosquitto
     container_name: mosquitto
@@ -25,18 +27,26 @@ services:
     volumes:
       - mosquitto_data:/mosquitto/
       - ./mosquitto/config/:/mosquitto/config:ro
+    networks:
+      - app-network
   go-backend:
     build:
       context: ./go-backend
       dockerfile: Dockerfile
     restart: always
+    depends_on:
+      - mosquitto
     ports:
       - "5000:5000"
+    networks:
+      - app-network
   mqttgateway:
     image: mqttgateway/mqttgateway
     container_name: mqttgateway
     depends_on:
       - mosquitto
+    networks:
+      - app-network
     env_file:
       - ./mqttgateway/env-variables.env
     ports:
@@ -46,9 +56,37 @@ services:
     depends_on:
       - prometheus
     ports:
-      - 3000:3000
+      - "3000:3000"
+    networks:
+      - app-network
     volumes:
       - grafana_data:/var/lib/grafana
       - ./grafana/provisioning/:/etc/grafana/provisioning/
     env_file:
       - ./grafana/config.monitoring
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
+    volumes:
+      - ./nginx/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/certbot/conf:/etc/letsencrypt
+      - ./nginx/certbot/www:/var/www/certbot
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - go-backend
+      - grafana
+    networks:
+      - app-network
+  certbot:
+    image: certbot/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    volumes:
+      - ./nginx/certbot/conf:/etc/letsencrypt
+      - ./nginx/certbot/www:/var/www/certbot
+
+networks:
+  app-network:
+    driver: bridge

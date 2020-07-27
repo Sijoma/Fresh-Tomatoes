@@ -50,7 +50,7 @@ func connectToBroker() (MQTT.Client) {
 
 func main() {
 	mqttClient = connectToBroker();
-
-	http.HandleFunc("/pump", PumpOn)
+	prefix := "/api"
+	http.HandleFunc(prefix + "/pump", PumpOn)
 	http.ListenAndServe(":5000", nil)
 }
