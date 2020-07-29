@@ -5,11 +5,59 @@ volumes:
   grafana_data: {}
 
 services:
+  reverse-proxy:
+    image: traefik:latest
+    # Enables the web UI and tells Traefik to listen to docker
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myresolver.acme.email=simonschulte1991@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      # The Web UI (enabled by --api.insecure=true)
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+  go-backend:
+    build:
+      context: ./go-backend
+      dockerfile: Dockerfile
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.go-backend.entrypoints=websecure"
+      - "traefik.http.routers.go-backend.rule=Host(`api.simon-zengerling.de`)"
+      - "traefik.http.routers.go-backend.tls.certresolver=myresolver"
+  grafana:
+    image: grafana/grafana
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.simon-zengerling.de`)"
+      - "traefik.http.routers.grafana.tls.certresolver=myresolver"
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    env_file:
+      - ./grafana/config.monitoring
   prometheus:
     image: prom/prometheus:latest
     volumes:
       - prometheus_data:/prometheus
       - ./prometheus/:/etc/prometheus/
+    labels:
+      - "traefik.enable=true"
     command:
       - "--storage.tsdb.path=/prometheus"
       - "--config.file=/etc/prometheus/prometheus.yml"
@@ -25,13 +73,6 @@ services:
     volumes:
       - mosquitto_data:/mosquitto/
       - ./mosquitto/config/:/mosquitto/config:ro
-  go-backend:
-    build:
-      context: ./go-backend
-      dockerfile: Dockerfile
-    restart: always
-    ports:
-      - "5000:5000"
   mqttgateway:
     image: mqttgateway/mqttgateway
     container_name: mqttgateway
@@ -41,14 +82,3 @@ services:
       - ./mqttgateway/env-variables.env
     ports:
       - "9337:9337"
-  grafana:
-    image: grafana/grafana
-    depends_on:
-      - prometheus
-    ports:
-      - 3000:3000
-    volumes:
-      - grafana_data:/var/lib/grafana
-      - ./grafana/provisioning/:/etc/grafana/provisioning/
-    env_file:
-      - ./grafana/config.monitoring
