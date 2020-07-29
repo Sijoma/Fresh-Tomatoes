@@ -67,6 +67,9 @@ services:
     volumes:
       - mosquitto_data:/mosquitto/
       - ./mosquitto/config/:/mosquitto/config:ro
+    ports:
+      - "1883:1883" 
+      - "9001:9001"
   mqttgateway:
     image: mqttgateway/mqttgateway
     container_name: mqttgateway
