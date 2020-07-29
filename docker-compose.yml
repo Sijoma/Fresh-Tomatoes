@@ -9,7 +9,6 @@ services:
     image: traefik:latest
     # Enables the web UI and tells Traefik to listen to docker
     command:
-      - "--api.insecure=true"
       - "--providers.docker"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
@@ -22,7 +21,7 @@ services:
       - "80:80"
       # The Web UI (enabled by --api.insecure=true)
       - "443:443"
-      - "8080:8080"
+      # - "8080:8080"
     volumes:
       - "./letsencrypt:/letsencrypt"
       # So that Traefik can listen to the Docker events
@@ -39,11 +38,6 @@ services:
       - "traefik.http.routers.go-backend.tls.certresolver=myresolver"
   grafana:
     image: grafana/grafana
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.grafana.entrypoints=websecure"
-      - "traefik.http.routers.grafana.rule=Host(`grafana.simon-zengerling.de`)"
-      - "traefik.http.routers.grafana.tls.certresolver=myresolver"
     depends_on:
       - prometheus
     volumes:
@@ -51,6 +45,11 @@ services:
       - ./grafana/provisioning/:/etc/grafana/provisioning/
     env_file:
       - ./grafana/config.monitoring
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.simon-zengerling.de`)"
+      - "traefik.http.routers.grafana.tls.certresolver=myresolver"
   prometheus:
     image: prom/prometheus:latest
     volumes:
@@ -61,15 +60,10 @@ services:
     command:
       - "--storage.tsdb.path=/prometheus"
       - "--config.file=/etc/prometheus/prometheus.yml"
-    ports:
-      - "9090:9090"
   mosquitto:
     image: eclipse-mosquitto
     container_name: mosquitto
     restart: always
-    ports:
-      - "1883:1883"
-      - "9001:9001"
     volumes:
       - mosquitto_data:/mosquitto/
       - ./mosquitto/config/:/mosquitto/config:ro
@@ -80,5 +74,3 @@ services:
       - mosquitto
     env_file:
       - ./mqttgateway/env-variables.env
-    ports:
-      - "9337:9337"
